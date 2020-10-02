@@ -2,7 +2,7 @@ const { menubar } = require('menubar');
 
 const mb = menubar();
 
-const DEBUG = false;
+const DEBUG = true;
 
 mb.on('after-create-window', () => {
   if (DEBUG) {

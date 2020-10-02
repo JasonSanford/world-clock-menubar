@@ -24,6 +24,20 @@ interface Props {
   offsetMinutes: number;
 }
 
+function offsetMinutesToDiffDisplay(minuteDiff: number): string {
+  const plusOrMinus = minuteDiff < 0 ? '-' : '+';
+  const hours = Math.abs(Math.floor(minuteDiff / 60));
+  const minutes = Math.abs(minuteDiff % 60);
+
+  if (minutes > 0) {
+    const paddedMinutes = minutes.toString().padStart(2, '0');
+    return `${plusOrMinus}${hours}:${paddedMinutes}`;
+  }
+
+  const hrOrHrs = hours === 1 ? 'HR' : 'HRS';
+  return `${plusOrMinus}${hours}${hrOrHrs}`;
+}
+
 const Clock = ({ offsetMinutes }: Props) => {
   const initialDate = getDateWithOffset(offsetMinutes);
   const initialClassName = clockClassNameForDate(initialDate);
@@ -56,6 +70,7 @@ const Clock = ({ offsetMinutes }: Props) => {
         renderMinuteMarks={false}
         value={value}
       />
+      <span style={{ color: '#8e8d92' }}>{offsetMinutesToDiffDisplay(offsetMinutes)}</span>
     </div>
   )
 }
