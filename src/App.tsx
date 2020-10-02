@@ -2,7 +2,7 @@ import React from 'react';
 import Clock from './Clock';
 import 'react-clock/dist/Clock.css';
 
-const App = () => {
+const App: React.FC = () => {
   // return <p>Hey Broski!</p>;
   return (
     <div>

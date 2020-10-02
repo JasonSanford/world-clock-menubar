@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import ReactClock from 'react-clock';
 import moment from 'moment';
 
@@ -11,14 +10,19 @@ function getDateWithOffset(offsetMinutes) {
   return (new Date());
 }
 
-function Clock(props) {
-  const [value, setValue] = useState(getDateWithOffset(props.offsetMinutes));
+interface Props {
+  theme: string;
+  offsetMinutes: number;
+}
+
+const Clock = ({ theme, offsetMinutes }: Props) => {
+  const [value, setValue] = useState(getDateWithOffset(offsetMinutes));
  
-  const className = props.theme === 'day' ? 'clock-face-light' : 'clock-face-dark';
+  const className = theme === 'day' ? 'clock-face-light' : 'clock-face-dark';
 
   useEffect(() => {
     const interval = setInterval(
-      () => setValue(getDateWithOffset(props.offsetMinutes)),
+      () => setValue(getDateWithOffset(offsetMinutes)),
       1000
     );
  
@@ -56,11 +60,6 @@ function Clock(props) {
       <ReactClock {...reactClockProps} value={value} />
     </div>
   )
-}
-
-Clock.propTypes = {
-  theme: PropTypes.string.isRequired,
-  offsetMinutes: PropTypes.number.isRequired,
 }
 
 export default Clock;

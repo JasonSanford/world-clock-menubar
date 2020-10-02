@@ -7,7 +7,7 @@
   "author": "Jason Sanford <jasonsanford@gmail.com>",
   "license": "BSD-2-Claus",
   "scripts": {
-    "watch": "electron app.js & parcel watch src/index.js -o index.js",
+    "watch": "electron app.js & parcel watch src/index.tsx -o index.js",
     "build": "parcel build src/index.js -o index.js"
   },
   "dependencies": {
@@ -20,5 +20,9 @@
     "react": "^16.13.1",
     "react-clock": "^3.0.0",
     "react-dom": "^16.13.1"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.50",
+    "typescript": "^4.0.3"
   }
 }
