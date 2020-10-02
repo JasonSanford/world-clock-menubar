@@ -3,11 +3,10 @@ import Clock from './Clock';
 import 'react-clock/dist/Clock.css';
 
 const App: React.FC = () => {
-  // return <p>Hey Broski!</p>;
   return (
-    <div>
-      <Clock theme="day" offsetMinutes={0} />
-      <Clock theme="night" offsetMinutes={570} />
+    <div style={{ display: 'flex' }}>
+      <Clock offsetMinutes={0} />
+      <Clock offsetMinutes={570} />
     </div>
   )
 };
