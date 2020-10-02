@@ -6,8 +6,8 @@ const App = () => {
   // return <p>Hey Broski!</p>;
   return (
     <div>
-      <Clock theme="day" />
-      <Clock theme="night" />
+      <Clock theme="day" offsetMinutes={0} />
+      <Clock theme="night" offsetMinutes={570} />
     </div>
   )
 };
