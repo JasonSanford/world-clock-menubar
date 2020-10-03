@@ -20,10 +20,6 @@ function clockClassNameForDate(date: Date): string {
   return 'clock-face-light';
 }
 
-interface Props {
-  offsetMinutes: number;
-}
-
 function offsetMinutesToDiffDisplay(minuteDiff: number): string {
   const plusOrMinus = minuteDiff < 0 ? '-' : '+';
   const hours = Math.abs(Math.floor(minuteDiff / 60));
@@ -38,7 +34,12 @@ function offsetMinutesToDiffDisplay(minuteDiff: number): string {
   return `${plusOrMinus}${hours}${hrOrHrs}`;
 }
 
-const Clock = ({ offsetMinutes }: Props) => {
+interface Props {
+  title: string;
+  offsetMinutes: number;
+}
+
+const Clock = ({ title, offsetMinutes }: Props) => {
   const initialDate = getDateWithOffset(offsetMinutes);
   const initialClassName = clockClassNameForDate(initialDate);
 
@@ -62,15 +63,40 @@ const Clock = ({ offsetMinutes }: Props) => {
     }
   }, []);
 
+  const titleStyle = {
+    color: '#ffffff',
+    textAlign: 'center',
+    letterSpacing: 1,
+    marginTop: 5
+  };
+
+  const offsetStyle = {
+    color: '#8e8d92',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    letterSpacing: 0.5,
+    marginTop: 5
+  };
+
+  const clockWrapperStyle = {
+    padding: 15
+  };
+
   return (
-    <div>
+    <div style={clockWrapperStyle}>
       <ReactClock
         className={className}
         renderNumbers={true}
         renderMinuteMarks={false}
         value={value}
+        size={125}
       />
-      <span style={{ color: '#8e8d92' }}>{offsetMinutesToDiffDisplay(offsetMinutes)}</span>
+      <div style={titleStyle}>
+        {title}
+      </div>
+      <div style={offsetStyle}>
+        {offsetMinutesToDiffDisplay(offsetMinutes)}
+      </div>
     </div>
   )
 }

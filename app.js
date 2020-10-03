@@ -1,8 +1,13 @@
 const { menubar } = require('menubar');
 
-const mb = menubar();
+const mb = menubar({
+  browserWindow: {
+    width: 465,
+    height: 225,
+  }
+});
 
-const DEBUG = true;
+const DEBUG = false;
 
 mb.on('after-create-window', () => {
   if (DEBUG) {

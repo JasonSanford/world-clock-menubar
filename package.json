@@ -8,7 +8,7 @@
   "license": "BSD-2-Claus",
   "scripts": {
     "watch": "electron app.js & parcel watch src/index.tsx -o index.js",
-    "build": "parcel build src/index.js -o index.js"
+    "build": "parcel build src/index.tsx -o index.js"
   },
   "dependencies": {
     "countries-and-timezones": "^2.3.1",
