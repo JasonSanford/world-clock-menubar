@@ -37,9 +37,10 @@ function offsetMinutesToDiffDisplay(minuteDiff: number): string {
 interface Props {
   title: string;
   offsetMinutes: number;
+  last: boolean;
 }
 
-const Clock = ({ title, offsetMinutes }: Props) => {
+const Clock = ({ title, offsetMinutes, last }: Props) => {
   const initialDate = getDateWithOffset(offsetMinutes);
   const initialClassName = clockClassNameForDate(initialDate);
 
@@ -79,7 +80,7 @@ const Clock = ({ title, offsetMinutes }: Props) => {
   };
 
   const clockWrapperStyle = {
-    padding: 15
+    marginRight: last ? 0 : 15,
   };
 
   return (
