@@ -7,8 +7,8 @@
   "author": "Jason Sanford <jasonsanford@gmail.com>",
   "license": "BSD-2-Claus",
   "scripts": {
-    "watch": "electron index.js & parcel watch src/index.tsx -o index.js",
-    "build": "parcel build src/index.tsx -o index.js"
+    "watch": "electron index.js & parcel watch src/index.tsx --public-url './' -o index.js",
+    "build": "parcel build src/index.tsx --public-url './' -o index.js"
   },
   "dependencies": {
     "countries-and-timezones": "^2.3.1",
@@ -19,7 +19,9 @@
     "parcel-bundler": "^1.12.4",
     "react": "^16.13.1",
     "react-clock": "^3.0.0",
-    "react-dom": "^16.13.1"
+    "react-dom": "^16.13.1",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^2.0.0"
   },
   "devDependencies": {
     "@types/react": "^16.9.50",
