@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 
+import { Styles } from './types';
+
 function getDateWithOffset(offsetMinutes: number): Date {
   if (offsetMinutes !== 0) {
     return moment().add(offsetMinutes, 'minutes').toDate();
@@ -27,10 +29,6 @@ function offsetMinutesToDiffDisplay(minuteDiff: number): string {
 interface Props {
   title: string;
   offsetMinutes: number;
-}
-
-interface Styles {
-  [key: string]: React.CSSProperties;
 }
 
 const styles: Styles = {
