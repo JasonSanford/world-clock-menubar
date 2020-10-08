@@ -41,33 +41,26 @@ const styles: Styles = {
     padding: '15px 20px',
     WebkitFontSmoothing: 'antialiased',
     letterSpacing: 0.5,
-    // justifyContent: 'space-between',
-    // position: 'relative'
   },
 
   titleAndDiff: {
     flex: 3,
-    // width: '65%',
   },
 
   title: {
     fontSize: 20,
-    // letterSpacing: 1,
     color: '#ffffff',
-    // fontWeight: 'lighter'
   },
 
   offset: {
     fontSize: 14,
     opacity: 0.5,
     color: '#ffffff',
-    // letterSpacing: 0.5,
     marginTop: 5
   },
 
   timeAndDay: {
     flex: 2,
-    // width: '35%',
     textAlign: 'right',
     paddingRight: 20,
   },
@@ -91,8 +84,6 @@ const styles: Styles = {
     color: '#ffffff',
     opacity: 0.9,
     verticalAlign: 'text-top',
-    // position: 'absolute',
-    // left: '100%',
   }
 }
 
@@ -116,6 +107,14 @@ const Location = ({ title, offsetMinutes }: Props) => {
     }
   }, []);
 
+  const diplayTime = moment(value).format('h:mm');
+  const displayAmPm = moment(value).format('A');
+  const displayDay = {
+    ['-1']: 'yesterday',
+    ['0']: 'today',
+    ['1']: 'tomorrow',
+  }[moment(value).get('day') - moment().get('day')];
+
   return (
     <div style={styles.location}>
       <div style={styles.titleAndDiff}>
@@ -129,14 +128,14 @@ const Location = ({ title, offsetMinutes }: Props) => {
       <div style={styles.timeAndDay}>
         <div style={{display: 'flex', justifyContent: 'flex-end'}}>
           <div style={styles.time}>
-            6:24
+            {diplayTime}
           </div>
           <div style={styles.ampm}>
-            AM
+            {displayAmPm}
           </div>
         </div>
         <div style={styles.day}>
-          today
+          {displayDay}
         </div>
       </div>
     </div>
