@@ -5,11 +5,11 @@ let window;
 
 const DEBUG = false;
 
-const initialWidth = 435;
-const initialHeight = 225;
+const initialWidth = 300;
+const initialHeight = 400;
 
-const settingsWidth = 435;
-const settingsHeight = 500;
+// const settingsWidth = 1035;
+// const settingsHeight = 500;
 
 const mb = menubar({
   preloadWindow: true,
@@ -39,10 +39,10 @@ mb.on('ready', () => {
   console.log('app is ready');
 });
 
-ipcMain.on('show-settings', () => {
-  window.setSize(settingsWidth, settingsHeight);
-});
+// ipcMain.on('show-settings', () => {
+//   window.setSize(settingsWidth, settingsHeight);
+// });
 
-ipcMain.on('hide-settings', () => {
-  window.setSize(initialWidth, initialHeight);
-});
+// ipcMain.on('hide-settings', () => {
+//   window.setSize(initialWidth, initialHeight);
+// });
