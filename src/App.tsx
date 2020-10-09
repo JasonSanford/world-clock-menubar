@@ -39,17 +39,6 @@ const defaultLocations: ILocation[] = [
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.Main);
 
-  // const locations = [
-  //   { title: 'Charlotte', offsetMinutes: 0 },
-  //   { title: 'Dallas', offsetMinutes: -60 },
-  //   { title: 'San Francisco', offsetMinutes: -180 },
-  //   { title: 'Bangalore', offsetMinutes: 570 },
-  //   { title: 'Charlotte', offsetMinutes: 0 },
-  //   { title: 'Dallas', offsetMinutes: -60 },
-  //   { title: 'San Francisco', offsetMinutes: -180 },
-  //   { title: 'Bangalore', offsetMinutes: 570 },
-  // ];
-
   const initialLocations: ILocation[] = get('locations', defaultLocations);
 
   const [locations, setLocations] = useState<ILocation[]>(initialLocations);

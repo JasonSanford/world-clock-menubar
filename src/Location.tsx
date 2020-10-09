@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { Icon } from 'semantic-ui-react';
 
-import { Styles } from './types';
+import { get } from './storage';
+import { Styles, TimeFormat } from './types';
 
 function getDateWithOffset(offsetMinutes: number): Date {
   if (offsetMinutes !== 0) {
@@ -94,6 +95,8 @@ const Location = ({
 }: Props) => {
   const initialDate = getDateWithOffset(offsetMinutes);
 
+  const timeFormat: string = get('time_format', TimeFormat.Twelve);
+
   const [value, setValue] = useState<Date>(initialDate);
   const [hovered, setHovered] = useState<boolean>(false);
 
@@ -112,7 +115,7 @@ const Location = ({
     }
   }, []);
 
-  const diplayTime = moment(value).format('h:mm');
+  const diplayTime = moment(value).format(timeFormat === TimeFormat.Twelve ? 'h:mm' : 'HH:mm');
   const displayAmPm = moment(value).format('A');
   const displayDay = {
     ['-1']: 'yesterday',
