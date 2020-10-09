@@ -65,20 +65,11 @@ const styles: Styles = {
   timeAndDay: {
     flex: 2,
     textAlign: 'right',
-    paddingRight: 20,
   },
 
   time: {
     fontSize: 25,
     color: '#ffffff',
-  },
-
-  day: {
-    fontSize: 14,
-    color: '#ffffff',
-    opacity: 0.5,
-    marginTop: 5,
-    marginRight: 22,
   },
 
   ampm: {
@@ -133,6 +124,14 @@ const Location = ({
     display: hovered ? 'inline' : 'none',
   };
 
+  const dayStyle: React.CSSProperties = {
+    fontSize: 14,
+    color: '#ffffff',
+    opacity: 0.5,
+    marginTop: 5,
+    marginRight: timeFormat === TimeFormat.Twelve ? 22 : 0,
+  };
+
   return (
     <div
       onMouseEnter={ () => setHovered(true) }
@@ -155,11 +154,16 @@ const Location = ({
           <div style={styles.time}>
             {diplayTime}
           </div>
-          <div style={styles.ampm}>
-            {displayAmPm}
-          </div>
+          {
+            timeFormat === TimeFormat.Twelve &&
+            (
+              <div style={styles.ampm}>
+                {displayAmPm}
+              </div>
+            )
+          }
         </div>
-        <div style={styles.day}>
+        <div style={dayStyle}>
           {displayDay}
         </div>
       </div>

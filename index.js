@@ -1,21 +1,12 @@
 const { menubar } = require('menubar');
-const { ipcMain } = require('electron');
 
-// let window;
-
-const DEBUG = true;
-
-const initialWidth = 325;
-const initialHeight = 400;
-
-// const settingsWidth = 1035;
-// const settingsHeight = 500;
+const DEBUG = false;
 
 const mb = menubar({
   preloadWindow: true,
   browserWindow: {
-    width: initialWidth,
-    height: initialHeight,
+    width: 325,
+    height: 400,
     resizable: DEBUG,
     webPreferences: {
       nodeIntegration: true,
@@ -38,11 +29,3 @@ mb.on('show', () => {
 mb.on('ready', () => {
   console.log('app is ready');
 });
-
-// ipcMain.on('show-settings', () => {
-//   window.setSize(settingsWidth, settingsHeight);
-// });
-
-// ipcMain.on('hide-settings', () => {
-//   window.setSize(initialWidth, initialHeight);
-// });
