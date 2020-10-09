@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
+import { Icon } from 'semantic-ui-react';
 
 import { Styles } from './types';
 
@@ -27,8 +28,10 @@ function offsetMinutesToDiffDisplay(minuteDiff: number): string {
 }
 
 interface Props {
+  index: number;
   title: string;
   offsetMinutes: number;
+  onRemove: (index: number) => void;
 }
 
 const styles: Styles = {
@@ -39,6 +42,7 @@ const styles: Styles = {
     padding: '15px 20px',
     WebkitFontSmoothing: 'antialiased',
     letterSpacing: 0.5,
+    position: 'relative',
   },
 
   titleAndDiff: {
@@ -54,7 +58,7 @@ const styles: Styles = {
     fontSize: 14,
     opacity: 0.5,
     color: '#ffffff',
-    marginTop: 5
+    marginTop: 5,
   },
 
   timeAndDay: {
@@ -85,10 +89,13 @@ const styles: Styles = {
   }
 }
 
-const Location = ({ title, offsetMinutes }: Props) => {
+const Location = ({
+  index, title, offsetMinutes, onRemove
+}: Props) => {
   const initialDate = getDateWithOffset(offsetMinutes);
 
   const [value, setValue] = useState<Date>(initialDate);
+  const [hovered, setHovered] = useState<boolean>(false);
 
   useEffect(() => {
     const interval = setInterval(
@@ -113,8 +120,25 @@ const Location = ({ title, offsetMinutes }: Props) => {
     ['1']: 'tomorrow',
   }[moment(value).get('day') - moment().get('day')];
 
+  const removeIconStyle: React.CSSProperties = {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    color: '#ffffff',
+    opacity: 0.5,
+    cursor: 'pointer',
+    display: hovered ? 'inline' : 'none',
+  };
+
   return (
-    <div style={styles.location}>
+    <div
+      onMouseEnter={ () => setHovered(true) }
+      onMouseLeave={ () => setHovered(false) }
+      style={styles.location}
+    >
+      <span onClick={ () => onRemove(index) } style={removeIconStyle}>
+        <Icon name='remove' />
+      </span>
       <div style={styles.titleAndDiff}>
         <div style={styles.title}>
           {title}

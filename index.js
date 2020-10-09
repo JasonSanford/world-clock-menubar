@@ -1,11 +1,11 @@
 const { menubar } = require('menubar');
 const { ipcMain } = require('electron');
 
-let window;
+// let window;
 
-const DEBUG = false;
+const DEBUG = true;
 
-const initialWidth = 300;
+const initialWidth = 325;
 const initialHeight = 400;
 
 // const settingsWidth = 1035;

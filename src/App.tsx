@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Button, Icon } from 'semantic-ui-react';
 
-import { Styles, AppState } from './types';
+import { get, set } from './storage';
+import { Styles, AppState, ILocation } from './types';
 import Location from './Location';
+import AddLocation from './AddLocation';
+import Settings from './Settings';
 
 const styles: Styles = {
   container: {
@@ -27,47 +30,54 @@ const styles: Styles = {
   },
 }
 
+const defaultLocations: ILocation[] = [
+  { title: 'Charlotte', offsetMinutes: 0 },
+  { title: 'Dallas', offsetMinutes: -60 },
+  { title: 'Bangalore', offsetMinutes: 570 },
+]
+
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.Main);
 
-  const locations = [
-    { title: 'Charlotte', offsetMinutes: 0 },
-    { title: 'Dallas', offsetMinutes: -60 },
-    { title: 'San Francisco', offsetMinutes: -180 },
-    { title: 'Bangalore', offsetMinutes: 570 },
-    { title: 'Charlotte', offsetMinutes: 0 },
-    { title: 'Dallas', offsetMinutes: -60 },
-    { title: 'San Francisco', offsetMinutes: -180 },
-    { title: 'Bangalore', offsetMinutes: 570 },
-  ];
+  // const locations = [
+  //   { title: 'Charlotte', offsetMinutes: 0 },
+  //   { title: 'Dallas', offsetMinutes: -60 },
+  //   { title: 'San Francisco', offsetMinutes: -180 },
+  //   { title: 'Bangalore', offsetMinutes: 570 },
+  //   { title: 'Charlotte', offsetMinutes: 0 },
+  //   { title: 'Dallas', offsetMinutes: -60 },
+  //   { title: 'San Francisco', offsetMinutes: -180 },
+  //   { title: 'Bangalore', offsetMinutes: 570 },
+  // ];
+
+  const initialLocations: ILocation[] = get('locations', defaultLocations);
+
+  const [locations, setLocations] = useState<ILocation[]>(initialLocations);
+
+  const handleRemoveLocation = (index: number) => {
+    const newLocations = [...locations];
+    newLocations.splice(index, 1);
+    set('locations', newLocations);
+    setLocations(newLocations);
+  };
 
   if (appState === AppState.Add) {
     return (
-      <div>
-        Time to add a place
-        <Button
-          icon
-          size='tiny'
-          onClick={() => setAppState(AppState.Main) }
-        >
-          Done
-        </Button>
-      </div>
+      <AddLocation
+        onLocationAdded={ (location) => {
+          const newLocations = [...locations];
+          newLocations.push(location);
+          set('locations', newLocations);
+          setLocations(newLocations);
+          setAppState(AppState.Main)
+        }}
+      />
     )
   }
 
   if (appState === AppState.Settings) {
     return (
-      <div>
-        Time to do settings
-        <Button
-          icon
-          size='tiny'
-          onClick={() => setAppState(AppState.Main) }
-        >
-          Done
-        </Button>
-      </div>
+      <Settings onDone={ () => { setAppState(AppState.Main) } } />
     )
   }
 
@@ -75,7 +85,14 @@ const App: React.FC = () => {
     <div style={styles.container}>
       <div style={styles.locations}>
         {
-          locations.map((location, i) => <Location key={i} {...location} />)
+          locations.map((location, i) => (
+            <Location
+              key={i}
+              index={i}
+              onRemove={ (index) => handleRemoveLocation(index) }
+              {...location}
+            />
+          ))
         }
       </div>
       <div style={styles.bottomBar}>
