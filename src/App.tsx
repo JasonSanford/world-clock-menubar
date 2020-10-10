@@ -53,6 +53,7 @@ const App: React.FC = () => {
   if (appState === AppState.Add) {
     return (
       <AddLocation
+        onCancel={ () => setAppState(AppState.Main) }
         onLocationAdded={ (location) => {
           const newLocations = [...locations];
           newLocations.push(location);

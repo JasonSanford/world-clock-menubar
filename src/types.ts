@@ -18,4 +18,25 @@ enum TimeFormat {
   TwentyFour = '24 Hour',
 }
 
-export { Styles, AppState, ILocation, TimeFormat };
+enum Theme {
+  Dark = 'Dark',
+  Light = 'Light',
+}
+
+interface Timezone {
+  name: string;
+  utcOffset: number;
+  utcOffsetStr: string;
+  dstOffset: number;
+  dstOffsetStr: string;
+  aliasOf: string | null;
+  country: string | null;
+}
+
+interface Country {
+  id: string;
+  name: string;
+  timezones: ReadonlyArray<string>;
+}
+
+export { Styles, AppState, ILocation, TimeFormat, Theme, Timezone, Country };
