@@ -4,6 +4,25 @@ import ct from 'countries-and-timezones';
 
 import { ILocation, Styles, Timezone, Country } from './types';
 
+interface TimezoneItemProps {
+  timezone: Timezone,
+  onChosen: (timezone: Timezone) => void;
+}
+
+const TimezoneItem: React.FC<TimezoneItemProps> = ({ timezone, onChosen }) => {
+  return (
+    <List.Item style={{ cursor: 'pointer' }} onClick={() => onChosen(timezone)}>
+      <List.Icon name='clock' />
+      {timezone.name}
+    </List.Item>
+  );
+}
+
+enum ScreenState {
+  Search,
+  Refine
+}
+
 interface Props {
   onLocationAdded: (location: ILocation) => void;
   onCancel: () => void;
@@ -13,6 +32,8 @@ interface State {
   searchValue: string;
   timezoneMatches: Array<Timezone>;
   countryMatches: Array<Country>;
+  screenState: ScreenState;
+  chosenTimezone: Timezone | null;
 }
 
 const styles: Styles = {
@@ -30,11 +51,14 @@ const styles: Styles = {
 export default class AddLocation extends React.Component<Props, State> {
   countries = []
   timezones = []
+  timezonesByName = {}
 
   state: State = {
     searchValue: '',
     timezoneMatches: [],
     countryMatches: [],
+    screenState: ScreenState.Search,
+    chosenTimezone: null,
   }
 
   handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
@@ -66,8 +90,16 @@ export default class AddLocation extends React.Component<Props, State> {
     }
 
     for (const timezone of Object.values(ct.getAllTimezones())) {
+      this.timezonesByName[timezone.name] = timezone;
       this.timezones.push(timezone);
     }
+  }
+
+  handleTimezoneChosen(timezone: Timezone) {
+    this.setState({
+      chosenTimezone: timezone,
+      screenState: ScreenState.Refine
+    });
   }
 
   renderCountries() {
@@ -84,8 +116,8 @@ export default class AddLocation extends React.Component<Props, State> {
             </List.Content>
           </List.Item>
           {
-            countryMatches.map(country => (
-              <List.Item>
+            countryMatches.map((country, i) => (
+              <List.Item key={i}>
                 <List.Icon>
                   <Flag name={country.id.toLowerCase()} />
                 </List.Icon>
@@ -94,11 +126,12 @@ export default class AddLocation extends React.Component<Props, State> {
                     {country.name}
                   </List.Header>
                   <List.List>
-                    {country.timezones.map(timezone => (
-                      <List.Item>
-                        <List.Icon name='clock' />
-                        {timezone}
-                      </List.Item>
+                    {country.timezones.map((timezoneName, i) => (
+                      <TimezoneItem
+                        key={i}
+                        onChosen={() => { this.handleTimezoneChosen(this.timezonesByName[timezoneName]); }}
+                        timezone={this.timezonesByName[timezoneName]}
+                      />
                     ))}
                   </List.List>
                 </List.Content>
@@ -124,11 +157,12 @@ export default class AddLocation extends React.Component<Props, State> {
             </List.Content>
           </List.Item>
           {
-            timezoneMatches.map(timezone => (
-              <List.Item>
-                <List.Icon name='clock' />
-                {timezone.name}
-              </List.Item>
+            timezoneMatches.map((timezone, i) => (
+              <TimezoneItem
+                key={i}
+                onChosen={ () => { this.handleTimezoneChosen(timezone); } }
+                timezone={timezone}
+              />
             ))
           }
         </List>
@@ -136,8 +170,18 @@ export default class AddLocation extends React.Component<Props, State> {
     }
   }
 
+  renderRefine() {
+    return (
+      <p>Hello</p>
+    )
+  }
+
   render() {
-    const { searchValue } = this.state;
+    const { searchValue, screenState } = this.state;
+
+    if (screenState === ScreenState.Refine) {
+      return this.renderRefine();
+    }
 
     return (
       <div style={styles.container}>
