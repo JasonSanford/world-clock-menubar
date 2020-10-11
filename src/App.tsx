@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Button, Icon } from 'semantic-ui-react';
+import ct from 'countries-and-timezones';
 
-import { get, set } from './storage';
+import { get, set, unset } from './storage';
 import { Styles, AppState, ILocation } from './types';
 import Location from './Location';
 import AddLocation from './AddLocation';
@@ -28,18 +29,41 @@ const styles: Styles = {
     padding: 6,
     marginTop: 3,
   },
-}
+};
 
-const defaultLocations: ILocation[] = [
-  { title: 'Charlotte', offsetMinutes: 0 },
-  { title: 'Dallas', offsetMinutes: -60 },
-  { title: 'Bangalore', offsetMinutes: 570 },
-]
+const getUserTimezone = () => {
+  let name = 'America/New_York';
+  let timezone = ct.getTimezone(name);
+
+  try {
+    name = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    timezone = ct.getTimezone(name);
+  } finally {
+    return timezone;
+  }
+};
+
+const defaultAlmostLocations = [
+  { title: 'Dallas', timezoneName: 'US/Central', offsetMinutes: null },
+  { title: 'Bangalore', timezoneName: 'Asia/Kolkata', offsetMinutes: null },
+];
+
+const getDefaultLocations = () => {
+  const userTimezone = getUserTimezone();
+  const defaultLocations: ILocation[] = [{ title: userTimezone.name, offsetMinutes: 0 }];
+  defaultAlmostLocations.forEach(almostLocation => {
+    const timezone = ct.getTimezone(almostLocation.timezoneName);
+    almostLocation.offsetMinutes = timezone.dstOffset - userTimezone.dstOffset;
+    defaultLocations.push(almostLocation);
+  });
+
+  return defaultLocations;
+};
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.Main);
 
-  const initialLocations: ILocation[] = get('locations', defaultLocations);
+  const initialLocations: ILocation[] = get('locations', getDefaultLocations());
 
   const [locations, setLocations] = useState<ILocation[]>(initialLocations);
 
@@ -54,8 +78,10 @@ const App: React.FC = () => {
     return (
       <AddLocation
         onCancel={ () => setAppState(AppState.Main) }
-        onLocationAdded={ (location) => {
+        onLocationAdded={ (title, timezone) => {
           const newLocations = [...locations];
+          const offsetMinutes = timezone.dstOffset - getUserTimezone().dstOffset;
+          const location = { title, timezone, offsetMinutes };
           newLocations.push(location);
           set('locations', newLocations);
           setLocations(newLocations);
@@ -67,7 +93,16 @@ const App: React.FC = () => {
 
   if (appState === AppState.Settings) {
     return (
-      <Settings onDone={ () => { setAppState(AppState.Main) } } />
+      <Settings
+        onResetToDefault={ () => {
+          setLocations(getDefaultLocations());
+          unset('locations');
+          unset('time_format');
+          unset('theme');
+          setAppState(AppState.Main);
+        } }
+        onDone={ () => { setAppState(AppState.Main) } }
+      />
     )
   }
 

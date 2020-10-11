@@ -6,6 +6,7 @@ import { TimeFormat, Theme, Styles } from './types';
 
 interface Props {
   onDone: () => void;
+  onResetToDefault: () => void;
 }
 
 const styles: Styles = {
@@ -21,7 +22,7 @@ const styles: Styles = {
 };
 
 const Settings = ({
-  onDone
+  onDone, onResetToDefault
 }: Props) => {
   const timeOptions = [
     { key: TimeFormat.Twelve, text: TimeFormat.Twelve, value: TimeFormat.Twelve },
@@ -71,7 +72,19 @@ const Settings = ({
             label='Theme'
             options={themeOptions}
           />
-          <Button onClick={onDone}>Done</Button>
+          <Button
+            primary
+            onClick={onDone}
+          >
+            Done
+          </Button>
+          <Button
+            size='small'
+            color='red'
+            onClick={onResetToDefault}
+          >
+            Reset Settings
+          </Button>
         </Form>
       </div>
     </div>

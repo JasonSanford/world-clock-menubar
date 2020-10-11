@@ -10,4 +10,8 @@ const set = (key: string, value: Value) => {
   localStorage.setItem(key, JSON.stringify(value));
 };
 
-export { get, set }
+const unset = (key: string) => {
+  localStorage.removeItem(key);
+};
+
+export { get, set, unset }

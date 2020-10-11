@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Button, Flag, Form, InputOnChangeData, List } from 'semantic-ui-react';
 import ct from 'countries-and-timezones';
 
-import { ILocation, Styles, Timezone, Country } from './types';
+import { Styles, Timezone, Country } from './types';
 
 interface TimezoneItemProps {
   timezone: Timezone,
@@ -24,7 +24,7 @@ enum ScreenState {
 }
 
 interface Props {
-  onLocationAdded: (location: ILocation) => void;
+  onLocationAdded: (title: string, timezone: Timezone) => void;
   onCancel: () => void;
 }
 
@@ -34,6 +34,7 @@ interface State {
   countryMatches: Array<Country>;
   screenState: ScreenState;
   chosenTimezone: Timezone | null;
+  refinedName: string | null;
 }
 
 const styles: Styles = {
@@ -59,6 +60,17 @@ export default class AddLocation extends React.Component<Props, State> {
     countryMatches: [],
     screenState: ScreenState.Search,
     chosenTimezone: null,
+    refinedName: null,
+  }
+
+  get saveButtonDisabled() {
+    const { refinedName } = this.state;
+
+    if (refinedName && refinedName.trim().length > 0) {
+      return false;
+    }
+
+    return true;
   }
 
   handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
@@ -84,6 +96,12 @@ export default class AddLocation extends React.Component<Props, State> {
     this.setState({ searchValue: data.value, timezoneMatches, countryMatches });
   }
 
+  handleRefinedNameChange = (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
+    const refinedName = data.value;
+
+    this.setState({ refinedName });
+  };
+
   componentDidMount() {
     for (const country of Object.values(ct.getAllCountries())) {
       this.countries.push(country);
@@ -98,6 +116,7 @@ export default class AddLocation extends React.Component<Props, State> {
   handleTimezoneChosen(timezone: Timezone) {
     this.setState({
       chosenTimezone: timezone,
+      refinedName: timezone.name,
       screenState: ScreenState.Refine
     });
   }
@@ -171,9 +190,44 @@ export default class AddLocation extends React.Component<Props, State> {
   }
 
   renderRefine() {
+    const { refinedName, chosenTimezone } = this.state;
+    const { onLocationAdded } = this.props;
+
     return (
-      <p>Hello</p>
-    )
+      <div style={styles.container}>
+        <div style={styles.formContainer}>
+          <Form size='tiny' style={{ marginBottom: 10 }}>
+            <Form.Input
+              placeholder="Name this location"
+              onChange={this.handleRefinedNameChange}
+              value={refinedName}
+            />
+          </Form>
+          <Button
+            primary
+            disabled={this.saveButtonDisabled}
+            style={{ marginTop: 5 }}
+            onClick={() => {
+              onLocationAdded(refinedName, chosenTimezone)
+            } }
+          >
+            Save Location
+          </Button>
+          <Button
+            style={{ marginTop: 5 }}
+            onClick={() => {
+              this.setState({
+                refinedName: null,
+                chosenTimezone: null,
+                screenState: ScreenState.Search,
+              });
+            } }
+          >
+            Cancel
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   render() {
@@ -199,17 +253,6 @@ export default class AddLocation extends React.Component<Props, State> {
           </div>
           <Button style={{ marginTop: 5 }} onClick={this.props.onCancel}>Cancel</Button>
         </div>
-        {/* <input
-          onChange={ (event) => setTitle(event.target.value) }
-          placeholder="Title"
-          value={title}
-        />
-        <input
-          onChange={ (event) => setOffsetMinutes(parseInt(event.target.value, 10)) }
-          placeholder="Offset Minutes"
-          value={offsetMinutes}
-        /> */}
-        {/* <Button onClick={ () => { onLocationAdded({title, offsetMinutes}) } }>Go</Button> */}
       </div>
     )
   }
