@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Flag, Form, InputOnChangeData, List } from 'semantic-ui-react';
+import { Button, Flag, Form, Input, InputOnChangeData, List } from 'semantic-ui-react';
 import ct from 'countries-and-timezones';
 
 import { Styles, Timezone, Country } from './types';
@@ -197,7 +197,8 @@ export default class AddLocation extends React.Component<Props, State> {
       <div style={styles.container}>
         <div style={styles.formContainer}>
           <Form size='tiny' style={{ marginBottom: 10 }}>
-            <Form.Input
+            <Input
+              autoFocus
               placeholder="Name this location"
               onChange={this.handleRefinedNameChange}
               value={refinedName}
@@ -242,6 +243,7 @@ export default class AddLocation extends React.Component<Props, State> {
         <div style={styles.formContainer}>
           <Form size='tiny' style={{ marginBottom: 10 }}>
             <Form.Input
+              autoFocus
               placeholder="Search countries or time zone names"
               onChange={this.handleSearchChange}
               value={searchValue}

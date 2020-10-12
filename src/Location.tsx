@@ -121,6 +121,7 @@ const Location = ({
     editMode
       ? (
         <Input
+          autoFocus
           size='mini'
           defaultValue={title}
           onBlur={ () => setEditMode(false) }

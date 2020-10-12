@@ -44,7 +44,7 @@ const getUserTimezone = () => {
 };
 
 const defaultAlmostLocations = [
-  { title: 'Dallas', timezoneName: 'US/Central', offsetMinutes: null },
+  { title: 'LA (click to edit)', timezoneName: 'US/Pacific', offsetMinutes: null },
   { title: 'Bangalore', timezoneName: 'Asia/Kolkata', offsetMinutes: null },
 ];
 
