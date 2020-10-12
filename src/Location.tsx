@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { Icon } from 'semantic-ui-react';
+import { Icon, Input } from 'semantic-ui-react';
 
 import { get } from './storage';
 import { Styles, TimeFormat } from './types';
@@ -28,13 +28,6 @@ function offsetMinutesToDiffDisplay(minuteDiff: number): string {
   return `${plusOrMinus}${hours}${hrOrHrs}`;
 }
 
-interface Props {
-  index: number;
-  title: string;
-  offsetMinutes: number;
-  onRemove: (index: number) => void;
-}
-
 const styles: Styles = {
   location: {
     display: 'flex',
@@ -53,6 +46,7 @@ const styles: Styles = {
   title: {
     fontSize: 20,
     color: '#ffffff',
+    cursor: 'text',
   },
 
   offset: {
@@ -81,14 +75,23 @@ const styles: Styles = {
   }
 }
 
+interface Props {
+  index: number;
+  title: string;
+  offsetMinutes: number;
+  onRemove: (index: number) => void;
+  onChangeTitle: (index: number, name: string) => void;
+}
+
 const Location = ({
-  index, title, offsetMinutes, onRemove
+  index, title, offsetMinutes, onRemove, onChangeTitle
 }: Props) => {
   const initialDate = getDateWithOffset(offsetMinutes);
 
   const timeFormat: string = get('time_format', TimeFormat.Twelve);
 
   const [value, setValue] = useState<Date>(initialDate);
+  const [editMode, setEditMode] = useState<boolean>(false);
   const [hovered, setHovered] = useState<boolean>(false);
 
   useEffect(() => {
@@ -113,6 +116,31 @@ const Location = ({
     ['0']: 'today',
     ['1']: 'tomorrow',
   }[moment(value).get('day') - moment().get('day')];
+
+  const renderTitleOrInput = () => (
+    editMode
+      ? (
+        <Input
+          size='mini'
+          defaultValue={title}
+          onBlur={ () => setEditMode(false) }
+          onKeyUp={ (e) => {
+            const currentValue = e.target.value.trim();
+            if (e.key === 'Enter' && currentValue.length > 0) {
+              onChangeTitle(index, currentValue);
+              setEditMode(false);
+            }
+          } }
+        />
+      ) : (
+        <div
+          onClick={ () => setEditMode(true) }
+          style={styles.title}
+        >
+          {title}
+        </div>
+      )
+  );
 
   const removeIconStyle: React.CSSProperties = {
     position: 'absolute',
@@ -142,9 +170,7 @@ const Location = ({
         <Icon name='remove' />
       </span>
       <div style={styles.titleAndDiff}>
-        <div style={styles.title}>
-          {title}
-        </div>
+        {renderTitleOrInput()}
         <div style={styles.offset}>
           {offsetMinutesToDiffDisplay(offsetMinutes)}
         </div>

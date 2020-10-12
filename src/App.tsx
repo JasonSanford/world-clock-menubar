@@ -74,6 +74,13 @@ const App: React.FC = () => {
     setLocations(newLocations);
   };
 
+  const handleChangeTitle = (index: number, title: string) => {
+    const newLocations = [...locations];
+    newLocations[index].title = title;
+    set('locations', newLocations);
+    setLocations(newLocations);
+  };
+
   if (appState === AppState.Add) {
     return (
       <AddLocation
@@ -114,7 +121,8 @@ const App: React.FC = () => {
             <Location
               key={i}
               index={i}
-              onRemove={ (index) => handleRemoveLocation(index) }
+              onRemove={handleRemoveLocation}
+              onChangeTitle={handleChangeTitle}
               {...location}
             />
           ))

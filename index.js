@@ -1,6 +1,8 @@
 const { menubar } = require('menubar');
 
-const DEBUG = false;
+// process.env.TZ = 'Asia/Kolkata';
+
+const DEBUG = true;
 
 const mb = menubar({
   preloadWindow: true,
