@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Button, Flag, Form, Input, InputOnChangeData, List } from 'semantic-ui-react';
 import ct from 'countries-and-timezones';
 
@@ -9,7 +9,9 @@ interface TimezoneItemProps {
   onChosen: (timezone: Timezone) => void;
 }
 
-const TimezoneItem: React.FC<TimezoneItemProps> = ({ timezone, onChosen }) => {
+const TimezoneItem: React.FC<TimezoneItemProps> = ({
+  timezone, onChosen
+}) => {
   return (
     <List.Item style={{ cursor: 'pointer' }} onClick={() => onChosen(timezone)}>
       <List.Icon name='clock' />
@@ -49,23 +51,112 @@ const styles: Styles = {
   }
 };
 
-export default class AddLocation extends React.Component<Props, State> {
-  countries = []
-  timezones = []
-  timezonesByName = {}
 
-  state: State = {
-    searchValue: '',
-    timezoneMatches: [],
-    countryMatches: [],
-    screenState: ScreenState.Search,
-    chosenTimezone: null,
-    refinedName: null,
-  }
+const AddLocation: React.FC<Props>= ({
+  onLocationAdded, onCancel
+}) => {
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [screenState, setScreenState] = useState<ScreenState>(ScreenState.Search);
+  const [timezoneMatches, setTimezoneMatches] = useState<Array<Timezone>>([]);
+  const [countryMatches, setCountryMatches] = useState<Array<Country>>([]);
+  const [chosenTimezone, setChosenTimezone] = useState<Timezone | null>(null);
+  const [refinedName, setRefinedName] = useState<string | null>(null);
 
-  get saveButtonDisabled() {
-    const { refinedName } = this.state;
+  const countries = useMemo(() => Object.values(ct.getAllCountries()), []);
+  const timezones = useMemo(() => Object.values(ct.getAllTimezones()), []);
 
+  const timezonesByName = useMemo(() => {
+    const tbn = {};
+
+    for (const timezone of Object.values(ct.getAllTimezones())) {
+      tbn[timezone.name] = timezone;
+    }
+
+    return tbn;
+  }, []);
+
+  const handleRefinedNameChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    data: InputOnChangeData
+  ) => {
+    setRefinedName(data.value);
+  };
+
+  const renderRefine = () => {
+    return (
+      <div style={styles.container}>
+        <div style={styles.formContainer}>
+          <Form size='tiny' style={{ marginBottom: 10 }}>
+            <Form.Field>
+              <label>Name this location</label>
+              <Input
+                autoFocus
+                placeholder="Location name"
+                onChange={handleRefinedNameChange}
+                value={refinedName}
+                onKeyUp={ (e) => {
+                  const currentValue = e.target.value.trim();
+                  if (e.key === 'Enter' && currentValue.length > 0) {
+                    onLocationAdded(refinedName, chosenTimezone)
+                  }
+                } }
+              />
+            </Form.Field>
+          </Form>
+          <Button
+            primary
+            disabled={saveButtonDisabled()}
+            style={{ marginTop: 5 }}
+            onClick={() => {
+              onLocationAdded(refinedName, chosenTimezone)
+            } }
+          >
+            Save Location
+          </Button>
+          <Button
+            style={{ marginTop: 5 }}
+            onClick={() => {
+              setRefinedName(null);
+              setChosenTimezone(null);
+              setScreenState(ScreenState.Search);
+            } }
+          >
+            Cancel
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  const handleSearchChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    data: InputOnChangeData
+  ) => {
+    const currentSearchValue = data.value;
+    const lowered = currentSearchValue.toLowerCase();
+    const currentTimezoneMatches = [];
+    const currentCountryMatches = [];
+
+    if (currentSearchValue.length > 1) {
+      timezones.forEach(timezone => {
+        if (timezone.name.toLowerCase().includes(lowered)) {
+          currentTimezoneMatches.push(timezone);
+        }
+      })
+
+      countries.forEach(country => {
+        if (country.name.toLowerCase().includes(lowered)) {
+          currentCountryMatches.push(country);
+        }
+      });
+    }
+
+    setSearchValue(data.value);
+    setTimezoneMatches(currentTimezoneMatches);
+    setCountryMatches(currentCountryMatches);
+  };
+
+  const saveButtonDisabled = () => {
     if (refinedName && refinedName.trim().length > 0) {
       return false;
     }
@@ -73,57 +164,38 @@ export default class AddLocation extends React.Component<Props, State> {
     return true;
   }
 
-  handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
-    const searchValue = data.value;
-    const lowered = searchValue.toLowerCase();
-    const timezoneMatches = [];
-    const countryMatches = [];
-
-    if (searchValue.length > 1) {
-      this.timezones.forEach(timezone => {
-        if (timezone.name.toLowerCase().includes(lowered)) {
-          timezoneMatches.push(timezone);
-        }
-      })
-
-      this.countries.forEach(country => {
-        if (country.name.toLowerCase().includes(lowered)) {
-          countryMatches.push(country);
-        }
-      });
-    }
-
-    this.setState({ searchValue: data.value, timezoneMatches, countryMatches });
-  }
-
-  handleRefinedNameChange = (event: React.ChangeEvent<HTMLInputElement>, data: InputOnChangeData) => {
-    const refinedName = data.value;
-
-    this.setState({ refinedName });
+  const handleTimezoneChosen = (timezone: Timezone) => {
+    setChosenTimezone(timezone);
+    setRefinedName(timezone.name);
+    setScreenState(ScreenState.Refine);
   };
 
-  componentDidMount() {
-    for (const country of Object.values(ct.getAllCountries())) {
-      this.countries.push(country);
+  const renderTimezones = () => {
+    if (timezoneMatches.length > 0) {
+      return (
+        <List>
+          <List.Item>
+            <List.Content>
+              <List.Header>
+                Time Zones
+              </List.Header>
+            </List.Content>
+          </List.Item>
+          {
+            timezoneMatches.map((timezone, i) => (
+              <TimezoneItem
+                key={i}
+                onChosen={ () => { handleTimezoneChosen(timezone); } }
+                timezone={timezone}
+              />
+            ))
+          }
+        </List>
+      );
     }
+  };
 
-    for (const timezone of Object.values(ct.getAllTimezones())) {
-      this.timezonesByName[timezone.name] = timezone;
-      this.timezones.push(timezone);
-    }
-  }
-
-  handleTimezoneChosen(timezone: Timezone) {
-    this.setState({
-      chosenTimezone: timezone,
-      refinedName: timezone.name,
-      screenState: ScreenState.Refine
-    });
-  }
-
-  renderCountries() {
-    const { countryMatches } = this.state;
-
+  const renderCountries = () => {
     if (countryMatches.length > 0) {
       return (
         <List>
@@ -148,8 +220,8 @@ export default class AddLocation extends React.Component<Props, State> {
                     {country.timezones.map((timezoneName, i) => (
                       <TimezoneItem
                         key={i}
-                        onChosen={() => { this.handleTimezoneChosen(this.timezonesByName[timezoneName]); }}
-                        timezone={this.timezonesByName[timezoneName]}
+                        onChosen={() => { handleTimezoneChosen(timezonesByName[timezoneName]); }}
+                        timezone={timezonesByName[timezoneName]}
                       />
                     ))}
                   </List.List>
@@ -160,102 +232,31 @@ export default class AddLocation extends React.Component<Props, State> {
         </List>
       );
     }
+  };
+
+  if (screenState === ScreenState.Refine) {
+    return renderRefine();
   }
 
-  renderTimezones() {
-    const { timezoneMatches } = this.state;
-
-    if (timezoneMatches.length > 0) {
-      return (
-        <List>
-          <List.Item>
-            <List.Content>
-              <List.Header>
-                Time Zones
-              </List.Header>
-            </List.Content>
-          </List.Item>
-          {
-            timezoneMatches.map((timezone, i) => (
-              <TimezoneItem
-                key={i}
-                onChosen={ () => { this.handleTimezoneChosen(timezone); } }
-                timezone={timezone}
-              />
-            ))
-          }
-        </List>
-      );
-    }
-  }
-
-  renderRefine() {
-    const { refinedName, chosenTimezone } = this.state;
-    const { onLocationAdded } = this.props;
-
-    return (
-      <div style={styles.container}>
-        <div style={styles.formContainer}>
-          <Form size='tiny' style={{ marginBottom: 10 }}>
-            <Input
-              autoFocus
-              placeholder="Name this location"
-              onChange={this.handleRefinedNameChange}
-              value={refinedName}
-            />
-          </Form>
-          <Button
-            primary
-            disabled={this.saveButtonDisabled}
-            style={{ marginTop: 5 }}
-            onClick={() => {
-              onLocationAdded(refinedName, chosenTimezone)
-            } }
-          >
-            Save Location
-          </Button>
-          <Button
-            style={{ marginTop: 5 }}
-            onClick={() => {
-              this.setState({
-                refinedName: null,
-                chosenTimezone: null,
-                screenState: ScreenState.Search,
-              });
-            } }
-          >
-            Cancel
-          </Button>
+  return (
+    <div style={styles.container}>
+      <div style={styles.formContainer}>
+        <Form size='tiny' style={{ marginBottom: 10 }}>
+          <Form.Input
+            autoFocus
+            placeholder="Search countries or time zone names"
+            onChange={handleSearchChange}
+            value={searchValue}
+          />
+        </Form>
+        <div style={{ maxHeight: 250, overflowY: 'auto' }}>
+          {renderTimezones()}
+          {renderCountries()}
         </div>
+        <Button style={{ marginTop: 5 }} onClick={onCancel}>Cancel</Button>
       </div>
-    );
-  }
-
-  render() {
-    const { searchValue, screenState } = this.state;
-
-    if (screenState === ScreenState.Refine) {
-      return this.renderRefine();
-    }
-
-    return (
-      <div style={styles.container}>
-        <div style={styles.formContainer}>
-          <Form size='tiny' style={{ marginBottom: 10 }}>
-            <Form.Input
-              autoFocus
-              placeholder="Search countries or time zone names"
-              onChange={this.handleSearchChange}
-              value={searchValue}
-            />
-          </Form>
-          <div style={{ maxHeight: 250, overflowY: 'auto' }}>
-            {this.renderTimezones()}
-            {this.renderCountries()}
-          </div>
-          <Button style={{ marginTop: 5 }} onClick={this.props.onCancel}>Cancel</Button>
-        </div>
-      </div>
-    )
-  }
+    </div>
+  );
 }
+
+export default AddLocation;
