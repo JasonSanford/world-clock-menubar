@@ -10,10 +10,6 @@ const mb = menubar({
     width: 325,
     height: 400,
     resizable: DEBUG,
-    webPreferences: {
-      nodeIntegration: true,
-      preload: __dirname + '/preload.js'
-    }
   },
 });
 
