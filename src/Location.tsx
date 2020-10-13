@@ -33,7 +33,8 @@ const styles: Styles = {
     display: 'flex',
     flexDirection: 'row',
     borderBottom: '1px solid #4c515b',
-    padding: '15px 20px',
+    // padding: '15px 20px',
+    padding: '10px 20px 15px 20px',
     WebkitFontSmoothing: 'antialiased',
     letterSpacing: 0.5,
     position: 'relative',
@@ -46,14 +47,20 @@ const styles: Styles = {
   title: {
     fontSize: 20,
     color: '#ffffff',
-    cursor: 'text',
+    cursor: 'pointer',
+    padding: 5,
+    marginLeft: -5,
+    borderRadius: 4,
+  },
+
+  titleHovered: {
+    backgroundColor: '#4B525F',
   },
 
   offset: {
     fontSize: 14,
     opacity: 0.5,
     color: '#ffffff',
-    marginTop: 5,
   },
 
   timeAndDay: {
@@ -93,6 +100,7 @@ const Location = ({
   const [value, setValue] = useState<Date>(initialDate);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [hovered, setHovered] = useState<boolean>(false);
+  const [titleHovered, setTitleHovered] = useState<boolean>(false);
 
   useEffect(() => {
     const interval = setInterval(
@@ -135,8 +143,16 @@ const Location = ({
         />
       ) : (
         <div
+          onMouseEnter={ () => setTitleHovered(true) }
+          onMouseLeave={ () => setTitleHovered(false) }
           onClick={ () => setEditMode(true) }
-          style={styles.title}
+          style={
+            Object.assign(
+              {},
+              styles.title,
+              titleHovered ? styles.titleHovered : {}
+            )
+          }
         >
           {title}
         </div>
