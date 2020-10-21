@@ -1293,4 +1293,3 @@ var e,t=arguments[3];!function(t,n){"object"==typeof exports&&"undefined"!=typeo
 },{"react":"n8MK","semantic-ui-react":"cotL","countries-and-timezones":"BhPf","./storage":"GYWt","./types":"UL96","./Location":"uZYm","./AddLocation":"FheU","./Settings":"Qvip"}],"zo2T":[function(require,module,exports) {
 "use strict";var e=this&&this.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(exports,"__esModule",{value:!0});var r=e(require("react")),t=e(require("react-dom"));require("semantic-ui-css/semantic.min.css");var u=e(require("./App"));t.default.render(r.default.createElement(u.default,null),document.querySelector("#root"));
 },{"react":"n8MK","react-dom":"NKHc","semantic-ui-css/semantic.min.css":"rPVC","./App":"NHn6"}]},{},["zo2T"], null)
-//# sourceMappingURL=index.js.map

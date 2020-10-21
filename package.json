@@ -8,7 +8,8 @@
   "license": "BSD-2-Clause",
   "scripts": {
     "watch": "electron index.js & parcel watch src/index.tsx --public-url './' -o index.js",
-    "build": "parcel build src/index.tsx --public-url './' -o index.js"
+    "build": "parcel build src/index.tsx --no-source-maps --public-url './' -o index.js",
+    "build:app": "electron-packager ./ 'World Clock' --platform=darwin --ignore='\\.git(ignore|modules)|\\.cache|src'"
   },
   "dependencies": {
     "countries-and-timezones": "^2.3.1",
