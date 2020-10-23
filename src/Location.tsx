@@ -15,7 +15,7 @@ function getDateWithOffset(offsetMinutes: number): Date {
 
 function offsetMinutesToDiffDisplay(minuteDiff: number): string {
   const plusOrMinus = minuteDiff < 0 ? '-' : '+';
-  const hours = Math.abs(Math.floor(minuteDiff / 60));
+  const hours = Math.floor(Math.abs(minuteDiff) / 60);
   const minutes = Math.abs(minuteDiff % 60);
 
   if (minutes > 0) {
@@ -33,7 +33,6 @@ const styles: Styles = {
     display: 'flex',
     flexDirection: 'row',
     borderBottom: '1px solid #4c515b',
-    // padding: '15px 20px',
     padding: '10px 20px 15px 20px',
     WebkitFontSmoothing: 'antialiased',
     letterSpacing: 0.5,
