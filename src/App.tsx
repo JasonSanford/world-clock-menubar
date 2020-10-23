@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Icon } from 'semantic-ui-react';
 import ct from 'countries-and-timezones';
+import moment from 'moment-timezone';
 
 import { get, set, unset } from './storage';
 import { Styles, AppState, ILocation } from './types';
@@ -50,10 +51,15 @@ const defaultAlmostLocations = [
 
 const getDefaultLocations = () => {
   const userTimezone = getUserTimezone();
+  const isUserDST = moment().isDST();
+  const userOffset = userTimezone[isUserDST ? 'dstOffset' : 'utcOffset'];
   const defaultLocations: ILocation[] = [{ title: userTimezone.name, offsetMinutes: 0 }];
+
   defaultAlmostLocations.forEach(almostLocation => {
     const timezone = ct.getTimezone(almostLocation.timezoneName);
-    almostLocation.offsetMinutes = timezone.dstOffset - userTimezone.dstOffset;
+    const isTimezoneDST = moment().tz(timezone.name).isDST()
+    const timezoneOffset = timezone[isTimezoneDST ? 'dstOffset' : 'utcOffset']
+    almostLocation.offsetMinutes = timezoneOffset - userOffset;
     defaultLocations.push(almostLocation);
   });
 
@@ -87,7 +93,15 @@ const App: React.FC = () => {
         onCancel={ () => setAppState(AppState.Main) }
         onLocationAdded={ (title, timezone) => {
           const newLocations = [...locations];
-          const offsetMinutes = timezone.dstOffset - getUserTimezone().dstOffset;
+
+          const userTimezone = getUserTimezone();
+          const isUserDST = moment().isDST();
+          const userOffset = userTimezone[isUserDST ? 'dstOffset' : 'utcOffset'];
+
+          const isLocationDST = moment().tz(timezone.name).isDST();
+          const locationOffset = timezone[isLocationDST ? 'dstOffset' : 'utcOffset'];
+
+          const offsetMinutes = locationOffset - userOffset;
           const location = { title, timezone, offsetMinutes };
           newLocations.push(location);
           set('locations', newLocations);
